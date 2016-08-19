@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TARGET=i686-elf
+echo $TARGET
 PREFIX=$(pwd)/compiler/$TARGET
 PATH=$PATH:$PREFIX/bin
 CFLAGS=" -g -O2"
@@ -20,7 +21,6 @@ mkdir -p compiler/$TARGET
 if [[ ! -d compiler/src ]]; then
 	mkdir -p compiler/src
 	cd compiler/src
-
 	echo 'Downloading sources'
 	echo $(pwd)
 	wget http://ftp.gnu.org/gnu/binutils/binutils-2.26.tar.gz
@@ -32,8 +32,12 @@ if [[ ! -d compiler/src ]]; then
 		wget http://www.bastoul.net/cloog/pages/download/count.php3?url=./cloog-parma-0.16.1.tar.gz
 		wget http://isl.gforge.inria.fr/isl-0.17.tar.xz
 	fi
+    cd -
+fi
 
-	echo 'Extracting archives'
+if [[ ! -d compiler/src/binutils-2.26 ]]; then
+	cd compiler/src/
+    echo 'Extracting archives'
 	echo $(pwd)
 	tar xzf binutils-2.26.tar.gz
 	tar xzf gcc-6.1.0.tar.gz
@@ -51,6 +55,7 @@ if [[ ! -d compiler/src ]]; then
 	fi
 	cd -
 fi
+
 
 echo 'Building binutils'
 echo $(pwd)
@@ -71,5 +76,10 @@ make all-target-libgcc -j8
 make install-gcc
 make install-target-libgcc
 cd -
-
+echo $(pwd)
+echo 'Cleaning up build directory'
+rm -rf compiler/build
+echo 'removing unarchived source files'
+rm -rf compiler/src/binutils-2.26
+rm -rf compiler/src/gcc-6.1.0
 echo 'Done!'
